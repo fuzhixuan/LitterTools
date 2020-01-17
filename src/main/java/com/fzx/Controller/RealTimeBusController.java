@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.fzx.Common.ApiUrl;
 import com.fzx.HttpUtils.HttpClientUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,20 +16,45 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 实时公交
+ *
+ * @author: zxfuc
+ * @className: RealTimeBusController
+ * @time: 2020/1/17
+ */
 @RestController
 @RequestMapping("/realTimeBus")
 public class RealTimeBusController {
+    Logger logger = LoggerFactory.getLogger(RealTimeBusController.class);
 
+   /**
+    * 根据公交路线名称，模糊匹配前10个公交车
+    *
+    * @description:  * @Param: null
+    * @return:
+    * @author: zxfuc
+    * @time: 2020/1/17 14:26
+    */
     @RequestMapping(value = "/getBusLines", method = RequestMethod.GET)
-    public static JSONObject getAllBusLineByBusName(@RequestParam("busName") String busName) {
+    public JSONObject getAllBusLineByBusName(@RequestParam("busName") String busName) {
         Map<String, Object> map = new HashMap<>();
         map.put("keyword", busName);
         map.put("type", "line");
-        return HttpClientUtil.doGet(ApiUrl.API_URL_01, map);
+        JSONObject result = HttpClientUtil.doGet(ApiUrl.API_URL_01, map);
+        logger.info("获取所有公交数据：" + result);
+        return result;
     }
 
+    /**
+     *
+     *
+     * @author: zxfuc
+     * @className: RealTimeBusController
+     * @time: 2020/1/17
+     */
     @RequestMapping(value = "/getRealBusInfo", method = RequestMethod.GET)
-    public static JSONObject getRealBusInfo(@RequestParam("lineId") String lineId) {
+    public JSONObject getRealBusInfo(@RequestParam("lineId") String lineId) {
         Map<String, Object> map = new HashMap<>();
         map.put("Type", "LineDetail");
 
@@ -79,6 +106,8 @@ public class RealTimeBusController {
 
         data.put("buses", buses);
         result.put("data", data);
+
+        logger.info("获取实时公交数据：" + result);
         return result;
     }
 }

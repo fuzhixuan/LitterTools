@@ -8,4 +8,4 @@ server:
 
 logging:
   file:
-    path: C:\Users\Administrator\Desktop\log\LitterTools.log
+    name: C:\Users\Administrator\Desktop\log\LitterTools.log
