@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fzx.Common.ApiUrl;
 import com.fzx.HttpUtils.HttpClientUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,10 +40,41 @@ public class RealTimeBusController {
         data.put("stops", stops);
 
         // 实时公交数据
-        JSONArray buses = data.getJSONArray("buses");
-        for (int i = 0; i < buses.size(); i++) {
-            String[] busInfo = buses.getString(i).split("|");
-            JSONObject json = new JSONObject();
+        JSONArray busesTmp = data.getJSONArray("buses");
+        int count = 0;
+        JSONObject buses = new JSONObject();
+
+        for (int i = 1; i < stops.size() * 2; i++) {
+            // 对应车站num，1开始
+            int k = i / 2 + 1;
+            // 是否是2站之间
+            boolean isMid = i % 2 == 1 ? false : true;
+            boolean flag = false;
+
+            for (int j = 0; j < busesTmp.size(); j++) {
+                String[] busInfo = busesTmp.getString(j).split("\\|");
+                String stopNum = busInfo[2];
+                String status = busInfo[3];
+
+                // 有这个车站num的数据
+                if (stopNum.equals(k + "")) {
+                    // 在2车站中间，或在站点
+                    if ((isMid && status.equals("1")) || (!isMid && status.equals("0"))) {
+                        if (buses.containsKey(i)) {
+                            buses.put(i + "", buses.getIntValue(i + "") + 1);
+                        } else {
+                            buses.put(i + "", 1);
+                        }
+
+                        flag = true;
+                    }
+                }
+            }
+
+            // 当前位置是否有数据
+            if (!flag) {
+                buses.put(i + "", 0);
+            }
         }
 
         data.put("buses", buses);
