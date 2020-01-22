@@ -28,30 +28,37 @@ import java.util.Map;
 public class RealTimeBusController {
     Logger logger = LoggerFactory.getLogger(RealTimeBusController.class);
 
-   /**
-    * 根据公交路线名称，模糊匹配前10个公交车
-    *
-    * @description:  * @Param: null
-    * @return:
-    * @author: zxfuc
-    * @time: 2020/1/17 14:26
-    */
+    /**
+     * 根据公交路线名称，模糊匹配前10个公交车
+     *
+     * @description: * @Param: null
+     * @return:
+     * @author: zxfuc
+     * @time: 2020/1/17 14:26
+     */
     @RequestMapping(value = "/getBusLines", method = RequestMethod.GET)
     public JSONObject getAllBusLineByBusName(@RequestParam("busName") String busName) {
         Map<String, Object> map = new HashMap<>();
         map.put("keyword", busName);
         map.put("type", "line");
         JSONObject result = HttpClientUtil.doGet(ApiUrl.API_URL_01, map);
+        // 过滤前10条数据
+        JSONArray tmp = result.getJSONObject("data").getJSONArray("lines");
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < tmp.size() && i < 10; i++) {
+            jsonArray.add(tmp.get(i));
+        }
+        result.getJSONObject("data").put("lines", jsonArray);
+
         logger.info("获取所有公交数据：" + result);
         return result;
     }
 
     /**
-     *
-     *
+     * @description: * @Param: null
+     * @return:
      * @author: zxfuc
-     * @className: RealTimeBusController
-     * @time: 2020/1/17
+     * @time: 2020/1/22 10:09
      */
     @RequestMapping(value = "/getRealBusInfo", method = RequestMethod.GET)
     public JSONObject getRealBusInfo(@RequestParam("lineId") String lineId) {
