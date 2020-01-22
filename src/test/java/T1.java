@@ -3,6 +3,7 @@ import com.fzx.HttpUtils.HttpClientUtil;
 import com.fzx.MD5.MD5;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,5 +76,10 @@ public class T1 {
         map.put("bus_staname", jsonObject01.getJSONArray("returl_list").getJSONObject(0).getString("bus_staname"));
         map.put("keySecret", MD5.md5Encryption("13296524960" + "f7c5a9ed4d58637782efd397f907d8c6" + "rtbus"));
         System.out.println(HttpClientUtil.doGet("http://api.dwmm136.cn/z_busapi/BusApi.php", map));
+    }
+
+    @Test
+    public void t5() {
+        System.out.println(LocalDateTime.now());
     }
 }
